@@ -1,7 +1,7 @@
 import os
 import discord
 import food
-from keep_alive import keep_alive
+#from keep_alive import keep_alive
 
 DISCUSSION_CHANNEL_ID = 715753002392223785 # general channel for people to post to
 IMAGE_CHANNEL_ID = 722221344447791254 # bot managed channel
@@ -72,6 +72,6 @@ async def post_image(og_msg, attachment, labels=None):
   await channel.send(file = fi)
   await channel.send(embed = embed)
 
-keep_alive()
+#keep_alive()
 token = os.environ.get("DISCORD_BOT_SECRET")
 client.run(token)
