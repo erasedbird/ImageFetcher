@@ -27,7 +27,8 @@ async def on_message(og_msg):
         try:
           is_food, labels = food.food(item.url)
           labels = ("{} ({:.1%})".format(label, score) for label, score in labels.items())
-        except food.FoodException:
+        except food.FoodException as e:  
+          print(e)
           error_msg = await og_msg.channel.send("**An error occurred during food detection.**\nTo manually override the food check, react with \N{SLICE OF PIZZA}. To remove this message, react with \N{WASTEBASKET}.")
           error_messages[error_msg.id] = (og_msg, item)
           await error_msg.add_reaction("\N{SLICE OF PIZZA}")
