@@ -30,14 +30,14 @@ async def on_message(og_msg):
         except food.FoodException as e:  
           print(e)
           error_msg = await og_msg.channel.send("**An error occurred during food detection.**\nTo manually override the food check, react with \N{SLICE OF PIZZA}. To remove this message, react with \N{WASTEBASKET}.")
-          error_messages[error_msg.id] = (og_msg, item)
+          error_messages[error_msg.id] = (og_msg, item, None)
           await error_msg.add_reaction("\N{SLICE OF PIZZA}")
           await error_msg.add_reaction("\N{WASTEBASKET}")
           return
 
         if not is_food:
           error_msg = await og_msg.channel.send("**Food was not detected!** (confidence > 70%)\nTo manually override the food check, react with \N{SLICE OF PIZZA}. To remove this message, react with \N{WASTEBASKET}.\nDetected Labels: `{}`".format("`, `".join(labels)))
-          error_messages[error_msg.id] = (og_msg, item)
+          error_messages[error_msg.id] = (og_msg, item, labels)
           await error_msg.add_reaction("\N{SLICE OF PIZZA}")
           await error_msg.add_reaction("\N{WASTEBASKET}")
           return
@@ -51,14 +51,14 @@ async def on_reaction_add(reaction, user):
   msg = reaction.message
   if msg.id in error_messages.keys() and user == error_messages[msg.id][0].author:
     if reaction.emoji == "\N{WASTEBASKET}":
-      og_msg, attachment = error_messages.pop(msg.id)
+      og_msg = error_messages.pop(msg.id)[0]
       await og_msg.remove_reaction("\N{ANTICLOCKWISE DOWNWARDS AND UPWARDS OPEN CIRCLE ARROWS}", client.user)
       await msg.delete()
       return
     elif reaction.emoji == "\N{SLICE OF PIZZA}":
-      og_msg, attachment = error_messages.pop(msg.id)
+      og_msg, attachment, labels = error_messages.pop(msg.id)
       await msg.delete()
-      await post_image(og_msg, attachment)
+      await post_image(og_msg, attachment, labels)
 
 
 async def post_image(og_msg, attachment, labels=None):
